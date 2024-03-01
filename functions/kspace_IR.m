@@ -25,22 +25,15 @@ OUTPUT:
     kspace (complex double): simulated kspace from M0 and other details
 %}
 
-function kspace = kspace_SE(M0,T1,T2,deltaB,timeMap,TE,TR,flipAngle,kx,ky)
+function kspace = kspace_IR(M0,T1,T2,deltaB,TI,TR,flipAngle,kx,ky)
     gamma = 42.58e06; % 42 MHz/T (H nuclei gyromagnetic ratio)
     i=sqrt(-1); % imaginary unit
-
-    TI = TE;
 
     % vectorize kspace
     kspace_size = size(kx);
     kxx=kx(:); kyy=ky(:);
     numKpts = length(kxx);
-    
-    timeMap = timeMap(:);
-
-    if prod(size(timeMap),'all')==1 % if just TE is given instead of a map
-        timeMap = repmat(timeMap,numKpts,1);
-    end
+   
     
     img_length=length(M0);
     [x, y] = meshgrid(linspace(0,1,img_length),linspace(0,1,img_length));
@@ -49,7 +42,7 @@ function kspace = kspace_SE(M0,T1,T2,deltaB,timeMap,TE,TR,flipAngle,kx,ky)
     ksp = @(j) M0.*(1-2*exp(-TI./T1)+exp(-TR./T1)).*...
         exp(-i*2*pi*(kxx(j)*x+kyy(j)*y));
     if deltaB ~= -1
-        ksp =@(j) ksp(j).*exp(i*gamma*deltaB*timeMap(j));
+        ksp =@(j) ksp(j).*exp(i*gamma*deltaB); % time map??? 3/1/2024
     end
 
     kspace=zeros(numKpts,1);
