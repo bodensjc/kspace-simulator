@@ -20,20 +20,22 @@ INPUTS:
     timeMap (real double): echo time TE map; can be single number (TE)
     TR (real double): Repitition time; TR~1
     kx, ky (real doubles): x and y coordinates of k-space
+    coilSensitivity (real double): coil sensitivity array
 
 OUTPUT:
     kspace (complex double): simulated kspace from M0 and other details
 %}
 
-function kspace = kspace_GE(M0,T1,T2star,deltaB,timeMap,TR,flipAngle,kx,ky)
+function kspace = kspace_GE(M0,T1,T2star,deltaB,timeMap,TR,flipAngle,kx,ky,coilSensitivity)
     gamma = 42.58e06; % 42 MHz/T (H nuclei gyromagnetic ratio)
     i=sqrt(-1); % imaginary unit
 
     % vectorize kspace
+    nCoils = size(coilSensitivity,3);
     kspace_size = size(kx);
+    kspace=zeros(size(kx,1),size(kx,2),nCoils);
     kxx=kx(:); kyy=ky(:);
     numKpts = length(kxx);
-    
     timeMap = timeMap(:);
 
     if prod(size(timeMap),'all')==1 % if just TE is given instead of a map
@@ -43,17 +45,21 @@ function kspace = kspace_GE(M0,T1,T2star,deltaB,timeMap,TR,flipAngle,kx,ky)
     img_length=length(M0);
     [x, y] = meshgrid(linspace(0,1,img_length),linspace(0,1,img_length));
 
-    % build the integrand of signal equation
-    ksp = @(j) M0.*(1-exp(-TR./T1)).*exp(-timeMap(j)./T2star).*...
-        (sind(flipAngle)./(1-cosd(flipAngle)*exp(-TR./T1))).*...
-        exp(-i*2*pi*(kxx(j)*x+kyy(j)*y));
-    if deltaB ~= -1
-        ksp =@(j) ksp(j).*exp(i*gamma*deltaB*timeMap(j));
+    
+    for c=1:nCoils
+        % build the integrand of signal equation
+        ksp = @(j) coilSensitivity(:,:,c).*M0.*(1-exp(-TR./T1)).*exp(-timeMap(j)./T2star).*...
+            (sind(flipAngle)./(1-cosd(flipAngle)*exp(-TR./T1))).*...
+            exp(-i*2*pi*(kxx(j)*x+kyy(j)*y));
+        if deltaB ~= -1
+            ksp =@(j) ksp(j).*exp(i*gamma*deltaB*timeMap(j));
+        end
+    
+        kspaceC=zeros(numKpts,1);
+        for j=1:numKpts
+            kspaceC(j) = sum(ksp(j),'all');
+        end
+        kspaceC = reshape(kspaceC,kspace_size);
+        kspace(:,:,c)=kspaceC;
     end
-
-    kspace=zeros(numKpts,1);
-    for j=1:numKpts
-        kspace(j) = sum(ksp(j),'all');
-    end
-    kspace = reshape(kspace,kspace_size);
 end
