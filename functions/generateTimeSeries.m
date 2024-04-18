@@ -23,9 +23,9 @@ OUTPUT:
 %}
 
 function kspaceTS = generateTimeSeries(kspaceR,kspaceT,nEpochs,nRest,nTask,sigma)
-    restBlock=repmat(kspaceR,1,1,nRest);
-    taskBlock=repmat(kspaceT,1,1,nTask);
-    singleBlock=cat(3,restBlock,taskBlock);
-    kspaceTS=repmat(singleBlock,1,1,nEpochs);
+    restBlock=repmat(kspaceR,1,1,1,nRest);
+    taskBlock=repmat(kspaceT,1,1,1,nTask);
+    singleBlock=cat(4,restBlock,taskBlock);
+    kspaceTS=repmat(singleBlock,1,1,1,nEpochs);
     kspaceTS = kspaceTS + sigma*randn(size(kspaceTS)) + sigma*randn(size(kspaceTS))*sqrt(-1);
 end
