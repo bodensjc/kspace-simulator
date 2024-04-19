@@ -6,7 +6,7 @@ Rowe Lab
 %}
 
 %{
-stats_ttest.m takes in a time series of fmri image data, a task indication 
+stats_SNR.m takes in a time series of fmri image data, a task indication 
 vector, and performs a t-test on the average task image against the average
 non-task image to determine activation
 
@@ -22,7 +22,7 @@ OUTPUT:
 
 function tmap = stats_ttest(imageTS,design)
     nx = size(imageTS,1); ny = size(imageTS,2);
-    tmap = zeros(nx, ny);
+    SNRmap = zeros(nx, ny);
 
     %optional masking to remove small t values
     %mask = zeros(nx, ny);
@@ -36,7 +36,7 @@ function tmap = stats_ttest(imageTS,design)
     for jj=1:nx
         for kk=1:ny
             [h,p,ci,stats] = ttest(abs(taskImages(jj,kk,:)),abs(restMean(jj,kk)),'Tail','right');
-            tmap(jj,kk) = abs(stats.tstat);
+            SNRmap(jj,kk) = abs(stats.tstat);
             %mask(jj,kk) = mean(abs(reconstructed_images(jj,kk,:))) > mask_threshold;
         end
     end
