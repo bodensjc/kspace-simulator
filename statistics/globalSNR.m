@@ -6,15 +6,12 @@ Rowe Lab
 %}
 
 %{
-getnoise.m Takes a given image and signal to noise ratio (SNR) then returns
-           the scale parameter of a Rayleigh distribution that can be used
-           to generate noise in k-space. The scale parameter, sigma, of the
-           Rayleigh dist. is the standard deviation of the related
-           bivariate normal distribution.
+globalSNR.m Takes a given image and returns the global signal to noise
+ratio of that singular image
 
 INPUTS:
     IMG (real/complex double): Image-space representation of object 
-    SNR (real double): desired SNR
+    MASK (real double): mask of brain (1) and space (0) voxels
 
 OUTPUT:
     getnoise (real double): Rayleigh dist. scale parameter sigma

@@ -20,24 +20,21 @@ OUTPUT:
     tmap (real double): [Ix, Iy] map of t-values at each voxel 
 %}
 
-function tmap = stats_ttest(imageTS,design)
+function SNRmap = stats_SNR(imageTS,design,TaskRest)
     nx = size(imageTS,1); ny = size(imageTS,2);
-    SNRmap = zeros(nx, ny);
 
     %optional masking to remove small t values
     %mask = zeros(nx, ny);
     %mask_threshold = (0.3)*max(max(mean(abs(imageTS),3)));
 
     % separate into task/nontask images
-    restImages=imageTS(:,:,:,design==0);
-    taskImages=imageTS(:,:,:,design==1);
-    restMean = mean(mean(abs(restImages),4),3);
-        
-    for jj=1:nx
-        for kk=1:ny
-            [h,p,ci,stats] = ttest(abs(taskImages(jj,kk,:)),abs(restMean(jj,kk)),'Tail','right');
-            SNRmap(jj,kk) = abs(stats.tstat);
-            %mask(jj,kk) = mean(abs(reconstructed_images(jj,kk,:))) > mask_threshold;
-        end
+    restImages=squeeze(mean(abs(imageTS(:,:,:,design==0)),3));
+    taskImages=squeeze(mean(abs(imageTS(:,:,:,design==1)),3));
+    if TaskRest == 0
+        restMean = squeeze(mean(restImages,3));
+        SNRmap = restMean./sqrt(var(restImages,0,3));
+    elseif TaskRest == 1
+        taskMean = squeeze(mean(taskImages,3));
+        SNRmap = taskMean./sqrt(var(taskImages,0,3));
     end
 end
