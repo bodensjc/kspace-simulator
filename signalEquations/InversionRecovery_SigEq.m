@@ -6,7 +6,7 @@ Rowe Lab
 %}
 
 %{
-kspace_IR.m returns the simulated kspace given relevant MRI info
+InversionRecovery_SigEq.m returns the simulated kspace given relevant MRI info
     and kspace sampling points. Using Equation (9)* from the paper
     "Incorporating Relaxivities..."
 
@@ -25,8 +25,9 @@ OUTPUT:
     kspace (complex double): simulated kspace from M0 and other details
 %}
 
-function kspace = kspace_IR(M0,T1,T2,deltaB,TI,TR,flipAngle,kx,ky)
-    gamma = 42.58e06; % 42 MHz/T (H nuclei gyromagnetic ratio)
+function kspace = InversionRecovery_SigEq(M0,T1,deltaB,kx,ky,MRI)
+    gamma = MRI.gamma; % 42 MHz/T (H nuclei gyromagnetic ratio)
+    TR=MRI.RepititionTime;
     i=sqrt(-1); % imaginary unit
 
     % vectorize kspace

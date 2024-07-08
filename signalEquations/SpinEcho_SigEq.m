@@ -6,7 +6,7 @@ Rowe Lab
 %}
 
 %{
-kspace_SE.m returns the simulated kspace given relevant MRI info
+SpinEcho_SigEq.m returns the simulated kspace given relevant MRI info
     and kspace sampling points. Using Equation (9)* from the paper
     "Incorporating Relaxivities..."
 
@@ -25,8 +25,9 @@ OUTPUT:
     kspace (complex double): simulated kspace from M0 and other details
 %}
 
-function kspace = kspace_SE(M0,T1,T2,deltaB,timeMap,TR,flipAngle,kx,ky)
-    gamma = 42.58e06; % 42 MHz/T (H nuclei gyromagnetic ratio)
+function kspace = SpinEcho_SigEq(M0,T1,T2,deltaB,kx,ky,timeMap,MRI)
+    gamma = MRI.gamma; % 42 MHz/T (H nuclei gyromagnetic ratio)
+    TR = MRI.RepititionTime;
     i=sqrt(-1); % imaginary unit
 
     % vectorize kspace

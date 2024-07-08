@@ -6,7 +6,7 @@ Rowe Lab
 %}
 
 %{
-kspace_GE.m returns the simulated kspace given relevant MRI info
+GradientEcho_SigEq.m returns the simulated kspace given relevant MRI info
     and kspace sampling points. Using Equation (9)* from the paper
     "Incorporating Relaxivities..."
 
@@ -26,8 +26,10 @@ OUTPUT:
     kspace (complex double): simulated kspace from M0 and other details
 %}
 
-function kspace = kspace_GE(M0,T1,T2star,deltaB,timeMap,TR,flipAngle,kx,ky,coilSensitivity)
-    gamma = 42.58e06; % 42 MHz/T (H nuclei gyromagnetic ratio)
+function kspace = GradientEcho_SigEq(M0,T1,T2star,deltaB,kx,ky,timeMap,MRI,coilSensitivity)
+    gamma = MRI.gamma; % 42 MHz/T (H nuclei gyromagnetic ratio)
+    flipAngle=MRI.FlipAngle;
+    TR=MRI.RepititionTime;
     i=sqrt(-1); % imaginary unit
 
     % vectorize kspace
@@ -38,10 +40,12 @@ function kspace = kspace_GE(M0,T1,T2star,deltaB,timeMap,TR,flipAngle,kx,ky,coilS
     numKpts = length(kxx);
     timeMap = timeMap(:);
 
+
     if prod(size(timeMap),'all')==1 % if just TE is given instead of a map
         timeMap = repmat(timeMap,numKpts,1);
     end
-    
+
+
     img_length=length(M0);
     [x, y] = meshgrid(linspace(0,1,img_length),linspace(0,1,img_length));
 
