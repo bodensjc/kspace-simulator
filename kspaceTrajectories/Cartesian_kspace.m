@@ -12,15 +12,15 @@ array of k-space positions and the relative times at which they are measured"
 
 INPUTS:
     MRI (struct): MRI struct from SHAKER
-    rec_size (int): length of square reconstructed image size
 
 OUTPUT:
     kspaceTrajectory (real double): three column matrix. [kx, ky, time]
 %}
 
-function kspaceTrajectory = kspace_Cartesian(MRI,rec_size)
+function [kx, ky, timeMap] = Cartesian_kspace(MRI)
     accelerationFactor = MRI.AccelerationFactor;
     echoTime = MRI.EchoTime;
+    rec_size = MRI.ReconstructionSize;
     
 
     [kx,ky] = meshgrid(-rec_size/2:rec_size/2-1,-rec_size/2:rec_size/2-1);
@@ -31,12 +31,11 @@ function kspaceTrajectory = kspace_Cartesian(MRI,rec_size)
 
     % create time map
     eesp = 0.000720;
-    deltaT = 0;%1/(2*125*10^3);
+    deltaT = 0; %1/(2*125*10^3);
     extras=0;
     TE=echoTime*1000;
     
     timeMap = zeros(rec_size,rec_size);
-    count = 0;
     for row = 1:rec_size
         for col=1:rec_size
             if mod(row,2)==1
@@ -50,5 +49,7 @@ function kspaceTrajectory = kspace_Cartesian(MRI,rec_size)
     init_t = TE - timeMapMsec(rec_size/2-1,rec_size);
     timeMap = timeMap + init_t/1000;
 
-
+    %kspaceTrajectory = [kx, ky, timeMap];
+    %disp(kspaceTrajectory)
+    %kspaceTrajectory = [1,2];
 end

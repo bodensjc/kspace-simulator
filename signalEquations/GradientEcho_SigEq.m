@@ -15,22 +15,24 @@ GradientEcho_SigEq.m returns the simulated kspace given relevant MRI info
 INPUTS:
     M0 (real double): proton spin density map
     T2star (real double): T2star map
-    T1 (real double): T2star map
+    T1 (real double): T1 map
     deltaB (real double): magnetic field inhomogeneity map
-    timeMap (real double): echo time TE map; can be single number (TE)
-    TR (real double): Repitition time; TR~1
-    kx, ky (real doubles): x and y coordinates of k-space
-    coilSensitivity (real double): coil sensitivity array
+    kSpace (struct): contains relevant parameters about kspace
+    MRI (struct): contains relevant parameters from the MRI simulator
 
 OUTPUT:
     kspace (complex double): simulated kspace from M0 and other details
 %}
 
-function kspace = GradientEcho_SigEq(M0,T1,T2star,deltaB,kx,ky,timeMap,MRI,coilSensitivity)
+function kspace = GradientEcho_SigEq(M0,T1,T2star,deltaB,kSpace,MRI)
+    i=sqrt(-1); % imaginary unit    
     gamma = MRI.gamma; % 42 MHz/T (H nuclei gyromagnetic ratio)
     flipAngle=MRI.FlipAngle;
     TR=MRI.RepititionTime;
-    i=sqrt(-1); % imaginary unit
+    coilSensitivity = MRI.CoilSensitivities;
+    kx = kSpace.kX; ky = kSpace.kY;
+    timeMap = kSpace.timeMap;
+
 
     % vectorize kspace
     nCoils = size(coilSensitivity,3);
@@ -40,11 +42,9 @@ function kspace = GradientEcho_SigEq(M0,T1,T2star,deltaB,kx,ky,timeMap,MRI,coilS
     numKpts = length(kxx);
     timeMap = timeMap(:);
 
-
     if prod(size(timeMap),'all')==1 % if just TE is given instead of a map
         timeMap = repmat(timeMap,numKpts,1);
     end
-
 
     img_length=length(M0);
     [x, y] = meshgrid(linspace(0,1,img_length),linspace(0,1,img_length));

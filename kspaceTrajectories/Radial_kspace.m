@@ -12,43 +12,49 @@ array of k-space positions and the relative times at which they are measured"
 
 INPUTS:
     MRI (struct): MRI struct from SHAKER
-    rec_size (int): length of square reconstructed image size
 
 OUTPUT:
     kspaceTrajectory (real double): three column matrix. [kx, ky, time]
 %}
 
-function kspaceTrajectory = kspace_Cartesian(MRI,rec_size)
+function [kx, ky, timeMap] = Radial_kspace(MRI)
     accelerationFactor = MRI.AccelerationFactor;
     echoTime = MRI.EchoTime;
-    
+    rec_size = MRI.ReconstructionSize;
 
-    [kx,ky] = meshgrid(-rec_size/2:rec_size/2-1,-rec_size/2:rec_size/2-1);
-    kx = kx(1:accelerationFactor:end,:);
-    ky = ky(1:accelerationFactor:end,:);
-    %nkx = width(kx); nky = height(kx);
+    nspokes = ceil(pi/2 * rec_size /accelerationFactor); % pi/2 * sampling density
+    nsamp = rec_size;
+    xr=[-nsamp/2:1:nsamp/2-1]';
+    angles = linspace(0,180,nspokes+1);
+    angles(end)=[];
+    kx=zeros(nsamp,nspokes);
+    ky=zeros(nsamp,nspokes);
+    for m=1:nspokes
+        kx(:,m) = xr*cosd(angles(m));
+        ky(:,m) = xr*sind(angles(m));
+    end
+    % include filter option later on... 12/05/2023
+    % rampdcf = 1/nspokes + (app.kx.^2 + app.ky.^2).^(0.5);
 
 
     % create time map
     eesp = 0.000720;
-    deltaT = 0;%1/(2*125*10^3);
+    deltaT = 0; %1/(2*125*10^3);
     extras=0;
     TE=echoTime*1000;
     
-    timeMap = zeros(rec_size,rec_size);
-    count = 0;
-    for row = 1:rec_size
-        for col=1:rec_size
+    timeMap = zeros(nspokes,nsamp);
+    for row = 1:nspokes
+        for col = 1:nsamp
             if mod(row,2)==1
                 timeMap(row,col)=(row-1)*extras*deltaT+(col-1)*deltaT+(row-1)*eesp;
             elseif mod(row,2)==0
-                timeMap(row,rec_size-col+1)=(row-1)*extras*deltaT+(col-1)*deltaT+(row-1)*eesp;
+                timeMap(row,nsamp-col+1)=(row-1)*extras*deltaT+(col-1)*deltaT+(row-1)*eesp;
             end
         end
     end
     timeMapMsec = timeMap*1000;
-    init_t = TE - timeMapMsec(rec_size/2-1,rec_size);
-    timeMap = timeMap + init_t/1000;
-
+    init_t = TE - timeMapMsec(floor(nspokes/2)-1,nsamp); % get middle time
+    timeMap = (timeMap + init_t/1000)';
 
 end
