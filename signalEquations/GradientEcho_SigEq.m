@@ -55,7 +55,7 @@ function kspace = GradientEcho_SigEq(M0,T1,T2star,deltaB,kSpace,MRI)
         ksp = @(j) coilSensitivity(:,:,c).*M0.*(1-exp(-TR./T1)).*exp(-timeMap(j)./T2star).*...
             (sind(flipAngle)./(1-cosd(flipAngle)*exp(-TR./T1))).*...
             exp(-i*2*pi*(kxx(j)*x+kyy(j)*y));
-        if deltaB ~= -1
+        if MRI.IncludeB0Inhomogeneity
             ksp =@(j) ksp(j).*exp(i*gamma*deltaB*timeMap(j));
         end
     

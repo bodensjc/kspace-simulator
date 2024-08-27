@@ -54,7 +54,7 @@ function kspace = SpinEcho_SigEq(M0,T1,T2,deltaB,kSpace,MRI)
         % build the integrand of signal equation
         ksp = @(j) coilSensitivity(:,:,c).*M0.*(1-exp(-TR./T1)).*exp(-timeMap(j)./T2).*...
             exp(-i*2*pi*(kxx(j)*x+kyy(j)*y));
-        if deltaB ~= -1
+        if MRI.IncludeB0Inhomogeneity
             ksp =@(j) ksp(j).*exp(i*gamma*deltaB*timeMap(j));
         end
     
