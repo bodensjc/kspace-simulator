@@ -23,7 +23,7 @@ OUTPUT:
     kspace (complex double): simulated kspace from M0 and other details
 %}
 
-function kspace = InversionRecovery_SigEq(M0,T1,deltaB,kSpace,MRI)
+function kspace = InversionRecovery_SigEq(M0,T1,T2,deltaB,kSpace,MRI)
     gamma = MRI.gamma; % 42 MHz/T (H nuclei gyromagnetic ratio)
     TR=MRI.RepititionTime;
     i=sqrt(-1); % imaginary unit
