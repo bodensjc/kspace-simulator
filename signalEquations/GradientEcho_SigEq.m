@@ -41,7 +41,7 @@ function kspace = GradientEcho_SigEq(M0,T1,T2star,deltaB,kSpace,MRI)
     kxx=kx(:); kyy=ky(:);
     numKpts = length(kxx);
     timeMap = timeMap(:);
-
+    
     if prod(size(timeMap),'all')==1 % if just TE is given instead of a map
         timeMap = repmat(timeMap,numKpts,1);
     end

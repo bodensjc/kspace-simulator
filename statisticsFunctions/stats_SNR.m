@@ -30,6 +30,8 @@ function SNRmap = stats_SNR(imageTS,design,TaskRest)
     % separate into task/nontask images
     restImages=squeeze(mean(abs(imageTS(:,:,:,design==0)),3));
     taskImages=squeeze(mean(abs(imageTS(:,:,:,design==1)),3));
+
+    TaskRest=0;
     if TaskRest == 0
         restMean = squeeze(mean(restImages,3));
         SNRmap = restMean./sqrt(var(restImages,0,3));

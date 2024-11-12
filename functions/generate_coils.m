@@ -17,13 +17,12 @@ INPUTS:
     startAngle (double): angle at which the first coil is placed
 
 OUTPUT:
-    sensitivityMaps (double): [reconX, reconY, Ncoils] sized array of the
+    sensitivityMaps (double): [phantomX, phantomY, Ncoils] sized array of the
     coil sensitivity maps
 %}
 
 function sensitivityMaps = generate_coils(reconX,reconY,Ncoils,startAngle)
     delta=360/Ncoils; % change in angle from one coil to the next
-    %=min(reconX,reconY)*0.75; % make distance to center of coil 1.5 times the FOV
     r = sqrt(reconX^2+reconY^2+1);
     [x,y]=meshgrid(-reconY/2:reconY/2-1,-reconX/2:reconX/2-1); % initialize voxel locations
     sensitivityMaps=zeros(reconY,reconX,Ncoils); % initialize data

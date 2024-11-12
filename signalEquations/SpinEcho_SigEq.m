@@ -7,8 +7,7 @@ Rowe Lab
 
 %{
 SpinEcho_SigEq.m returns the simulated kspace given relevant MRI info
-    and kspace sampling points. Using Equation (9)* from the paper
-    "Incorporating Relaxivities..."
+    and kspace sampling points.
 
     SPIN ECHO
 

@@ -22,10 +22,25 @@ OUTPUT:
     kspaceTS (complex double): time series of kspace arrays
 %}
 
-function kspaceTS = generateTimeSeries(kspaceR,kspaceT,nEpochs,nRest,nTask,sigma)
-    restBlock=repmat(kspaceR,1,1,1,nRest);
-    taskBlock=repmat(kspaceT,1,1,1,nTask);
-    singleBlock=cat(4,restBlock,taskBlock);
-    kspaceTS=repmat(singleBlock,1,1,1,nEpochs);
+function kspaceTS = generateTimeSeries(kspaceR,kspaceT,nEpochs,nRest,nTask,sigma,initialRest)
+    %initialRestBlock=repmat(kspaceR,1,1,1,initialRest);
+    %restBlock=repmat(kspaceR,1,1,1,nRest);
+    %taskBlock=repmat(kspaceT,1,1,1,nTask);
+    %singleBlock=cat(4,taskBlock,restBlock);
+    %kspaceTS=repmat(singleBlock,1,1,1,nEpochs);
+    %kspaceTS = cat(4,initialRestBlock,kspaceTS);
+
+
+    design = cat(1,zeros(initialRest,1),repmat([ones(nTask,1);zeros(nRest,1)],nEpochs,1));
+    [x,y,c] = size(kspaceR);
+    kspaceTS = zeros(x,y,c,length(design));
+    for j=1:size(kspaceTS,4)
+        if design(j)==0
+            kspaceTS(:,:,:,j) = kspaceR;
+        elseif design(j)==1
+            kspaceTS(:,:,:,j) = kspaceT;
+        end
+    end
+
     kspaceTS = kspaceTS + sigma*randn(size(kspaceTS)) + sigma*randn(size(kspaceTS))*sqrt(-1);
 end

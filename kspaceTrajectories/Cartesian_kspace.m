@@ -30,8 +30,8 @@ function [kx, ky, timeMap] = Cartesian_kspace(MRI)
 
 
     % create time map
-    eesp = 0.000720;
-    deltaT = 0; %1/(2*125*10^3);
+    eesp = MRI.eesp / 1000;
+    deltaT = 1/(2*125*10^3); % bandwidth calculation. update in future version
     extras=0;
     TE=echoTime*1000;
     
