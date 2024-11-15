@@ -30,6 +30,11 @@ function kspaceTS = generateTimeSeries(kspaceR,kspaceT,nEpochs,nRest,nTask,sigma
     %kspaceTS=repmat(singleBlock,1,1,1,nEpochs);
     %kspaceTS = cat(4,initialRestBlock,kspaceTS);
 
+    kspaceRestReal = real(kspaceR);
+    
+    kspaceRestImag = imag(kspaceR);
+    kspaceTaskReal = real(kspaceT);
+    kspaceTaskImag = imag(kspaceT);
 
     design = cat(1,zeros(initialRest,1),repmat([ones(nTask,1);zeros(nRest,1)],nEpochs,1));
     [x,y,c] = size(kspaceR);

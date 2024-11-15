@@ -49,7 +49,7 @@ function kspace = GradientEcho_SigEq(M0,T1,T2star,deltaB,kSpace,MRI)
     img_length=length(M0);
     [x, y] = meshgrid(linspace(0,1,img_length),linspace(0,1,img_length));
 
-    
+
     for c=1:nCoils
         % build the integrand of signal equation
         ksp = @(j) coilSensitivity(:,:,c).*M0.*(1-exp(-TR./T1)).*exp(-timeMap(j)./T2star).*...
