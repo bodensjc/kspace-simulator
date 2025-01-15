@@ -22,23 +22,34 @@ OUTPUT:
     kspaceTS (complex double): time series of kspace arrays
 %}
 
-function kspaceTS = generateTimeSeries(kspaceR,kspaceT,nEpochs,nRest,nTask,sigma,initialRest)
+function kspaceTS = generateTimeSeries(kspaceR,kspaceT,design,sigma)
     %initialRestBlock=repmat(kspaceR,1,1,1,initialRest);
     %restBlock=repmat(kspaceR,1,1,1,nRest);
     %taskBlock=repmat(kspaceT,1,1,1,nTask);
     %singleBlock=cat(4,taskBlock,restBlock);
     %kspaceTS=repmat(singleBlock,1,1,1,nEpochs);
     %kspaceTS = cat(4,initialRestBlock,kspaceTS);
-
-    kspaceRestReal = real(kspaceR);
-    
+    %{
+    kspaceRestReal = real(kspaceR)'
     kspaceRestImag = imag(kspaceR);
     kspaceTaskReal = real(kspaceT);
     kspaceTaskImag = imag(kspaceT);
-
     design = cat(1,zeros(initialRest,1),repmat([ones(nTask,1);zeros(nRest,1)],nEpochs,1));
+    %}
+
+
+
+    % kspaceR/T is like rho/theta (true)
+    % add noise to get r/phi (measured)
+
     [x,y,c] = size(kspaceR);
     kspaceTS = zeros(x,y,c,length(design));
+
+    %x = s .* randn(dim) + v;
+    %y = s .* randn(dim);
+    %r = sqrt(x.^2 + y.^2);
+
+
     for j=1:size(kspaceTS,4)
         if design(j)==0
             kspaceTS(:,:,:,j) = kspaceR;
@@ -47,5 +58,9 @@ function kspaceTS = generateTimeSeries(kspaceR,kspaceT,nEpochs,nRest,nTask,sigma
         end
     end
 
-    kspaceTS = kspaceTS + sigma*randn(size(kspaceTS)) + sigma*randn(size(kspaceTS))*sqrt(-1);
+    kspaceTS = kspaceTS + (sigma*randn(size(kspaceTS)) + sigma*randn(size(kspaceTS))*sqrt(-1))/c;
+    
+
+    %beta0 = abs(kspaceR);
+    
 end

@@ -11,7 +11,7 @@
 % makeimagecorr(anat,mingrey,maxgrey,supimg,threshval,maxval);
 function [newmap] = makeimagecorr(anat,mingrey,maxgrey,supimg,threshval,maxval)
 
-load supmap.txt
+load supMap.txt
 glevels=128;
 clevels=20;
 threshvalu=threshval; threshvall=-threshval;
@@ -60,7 +60,7 @@ end
 
 [xdimf,ydimf]=size(newmap);
 xinc=xdimf/4; yinc=ydimf/4;
-subplot(1,1,1), colormap(supmap)
+subplot(1,1,1), colormap(supMap)
 image(newmap);  
 axis image
 set(gca,'xtick',[(0:xinc:xdimf)]), set(gca,'ytick',[(0:yinc:ydimf)]), axis image, xlabel(['Image ',num2str(1+count2-1)],'FontSize',12)

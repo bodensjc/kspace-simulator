@@ -2,12 +2,12 @@
 John Bodenschatz
 Marquette University
 Rowe Lab
-09/09/2023
+08/21/2024
 %}
 
 %{
-CartesianIFFT.m takes in fmri time series k-space data and uses the
-standard inverser foureir transform to reconstruct images.
+template_reconstruction.m is a template for users to create their own
+reconstruction algorithm
 
 
 INPUTS:
@@ -20,6 +20,6 @@ OUTPUT:
     imageTimeSeries (complex double): Time Series of image space
 %}
 
-function imageTimeSeries = CartesianIFFT(MRI,kSpace,kSpaceTimeSeries)
-    imageTimeSeries = ifftshift(ifft2(fftshift(kSpaceTimeSeries)),4);
+function imageTimeSeries = template_reconstruction(MRI,kSpace,kSpaceTimeSeries)
+    imageTimeSeries = zeros(size(kSpaceTimeSeries)); % change this line to reconstruct the time series as needed
 end
